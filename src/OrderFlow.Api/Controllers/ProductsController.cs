@@ -1,3 +1,4 @@
+using OrderFlow.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using OrderFlow.Api.Models;
 
@@ -7,22 +8,26 @@ namespace OrderFlow.Api.Controllers;
 [Route("api/products")]
 public class ProductsController : ControllerBase
 {
-    private static readonly Product[] Products =
-    [
-        new(1, "Notebook", 4.99m, 25),
-        new(2, "Pen", 1.50m, 100)
-    ];
+    private readonly ProductService inventoryService;
+
+    public ProductsController(ProductService suppliedService)
+    {
+        inventoryService = suppliedService;
+
+    }
+
 
     [HttpGet]
     public ActionResult<IEnumerable<Product>> GetProducts()
     {
-        return Ok(Products);
+        return Ok(inventoryService.GetProducts());
     }
 
+    // Controller: returns an HTTP response
     [HttpGet("{id}")]
     public ActionResult<Product> GetProduct(int id)
     {
-        Product? searchProduct = Products.FirstOrDefault(product => product.Id == id);
+        Product? searchProduct = inventoryService.GetProduct(id);
 
         if (searchProduct == null)
         {
