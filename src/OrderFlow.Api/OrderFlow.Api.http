@@ -1,6 +1,42 @@
-@OrderFlow.Api_HostAddress = http://localhost:5158
+@host = http://localhost:5158
 
-GET {{OrderFlow.Api_HostAddress}}/api/products
+GET {{host}}/api/products
 Accept: application/json
 
 ###
+POST {{host}}/api/products
+Content-Type: application/json
+
+{"name":"Pencil","price":0.75,"stockQuantity":50}
+
+###
+POST {{host}}/api/customers
+Content-Type: application/json
+
+{"name":"Example Buyer","email":"buyer@example.invalid"}
+
+###
+# Use a customer ID returned by the previous request. Product 1 is a development seed.
+POST {{host}}/api/orders
+Content-Type: application/json
+
+{"customerId":1,"items":[{"productId":1,"quantity":2}]}
+
+###
+GET {{host}}/api/orders
+
+###
+# Replace 1 with an order ID returned by POST /api/orders.
+PATCH {{host}}/api/orders/1/status
+Content-Type: application/json
+
+{"status":"Fulfilled"}
+
+###
+GET {{host}}/api/reports/low-stock?threshold=10
+
+###
+GET {{host}}/api/reports/sales
+
+###
+GET {{host}}/openapi/v1.json
