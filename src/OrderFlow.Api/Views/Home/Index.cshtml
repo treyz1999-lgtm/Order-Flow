@@ -1,0 +1,35 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<section class="hero">
+    <p class="eyebrow">Dashboard</p>
+    <h1>Manage your orders in one place.</h1>
+    <p>Track products, customers, inventory, and sales from this simple .NET app.</p>
+    <div class="actions">
+        <a class="button primary" href="/orders/new">Place an order</a>
+        <a class="button secondary" href="/products/new">Add a product</a>
+    </div>
+</section>
+<section class="stats" aria-label="Overview">
+    <div class="stat"><span>Products</span><strong>@Model.ProductCount</strong></div>
+    <div class="stat"><span>Customers</span><strong>@Model.CustomerCount</strong></div>
+    <div class="stat"><span>Orders</span><strong>@Model.OrderCount</strong></div>
+    <div class="stat"><span>Booked sales</span><strong>@Model.Sales.BookedRevenue.ToString("C")</strong></div>
+</section>
+<section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">Inventory</p><h2>Low stock</h2></div><a href="/reports">View reports →</a></div>
+    @if (Model.LowStock.Count == 0)
+    {
+        <p class="muted">No products have 10 or fewer units in stock.</p>
+    }
+    else
+    {
+        <div class="table-wrap"><table><thead><tr><th>Product</th><th>Units left</th></tr></thead><tbody>
+        @foreach (var product in Model.LowStock)
+        {
+            <tr><td>@product.Name</td><td><span class="badge warning">@product.StockQuantity</span></td></tr>
+        }
+        </tbody></table></div>
+    }
+</section>

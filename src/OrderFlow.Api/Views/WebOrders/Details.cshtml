@@ -1,0 +1,22 @@
+@model OrderResponse
+@{
+    ViewData["Title"] = $"Order #{Model.Id}";
+    var customer = ViewBag.Customer as CustomerResponse;
+}
+<div class="page-heading"><div><p class="eyebrow">Fulfillment</p><h1>Order #@Model.Id</h1><p>@Model.CreatedAtUtc.ToLocalTime().ToString("f")</p></div><a href="/orders">← Orders</a></div>
+<section class="panel">
+    <div class="order-summary"><div><span class="muted">Customer</span><strong>@(customer?.Name ?? $"Customer #{Model.CustomerId}")</strong><span class="subtle">@customer?.Email</span></div><div><span class="muted">Status</span><strong>@Model.Status</strong></div><div><span class="muted">Total</span><strong>@Model.Total.ToString("C")</strong></div></div>
+    <div class="table-wrap"><table><thead><tr><th>Product</th><th>Quantity</th><th>Unit price</th><th>Line total</th></tr></thead><tbody>
+    @foreach (var item in Model.Items)
+    {
+        <tr><td>@item.ProductName</td><td>@item.Quantity</td><td>@item.UnitPrice.ToString("C")</td><td>@item.LineTotal.ToString("C")</td></tr>
+    }
+    </tbody></table></div>
+    @if (Model.Status == OrderStatus.Placed)
+    {
+        <div class="actions status-actions">
+            <form method="post" action="/orders/@Model.Id/status">@Html.AntiForgeryToken()<input type="hidden" name="status" value="Fulfilled" /><button class="button primary" type="submit">Mark fulfilled</button></form>
+            <form method="post" action="/orders/@Model.Id/status" onsubmit="return confirm('Cancel this order and restore its stock?');">@Html.AntiForgeryToken()<input type="hidden" name="status" value="Cancelled" /><button class="button secondary" type="submit">Cancel and restock</button></form>
+        </div>
+    }
+</section>

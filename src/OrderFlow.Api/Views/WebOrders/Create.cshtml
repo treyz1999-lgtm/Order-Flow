@@ -1,0 +1,23 @@
+@model OrderForm
+@{
+    ViewData["Title"] = "Place order";
+}
+<div class="page-heading"><div><p class="eyebrow">Fulfillment</p><h1>Place order</h1><p>Choose a customer and one product. Available stock decreases when you submit.</p></div><a href="/orders">← Orders</a></div>
+<section class="panel form-panel">
+    <form method="post" action="/orders/new">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="validation" role="alert"></div>
+        <div class="field"><label asp-for="CustomerId">Customer</label><select asp-for="CustomerId" asp-items="Model.Customers"><option value="0">Choose a customer</option></select><span asp-validation-for="CustomerId" class="validation"></span></div>
+        <div class="field"><label asp-for="ProductId">Product</label><select asp-for="ProductId" asp-items="Model.Products"><option value="0">Choose a product</option></select><span asp-validation-for="ProductId" class="validation"></span></div>
+        <div class="field"><label asp-for="Quantity"></label><input asp-for="Quantity" type="number" min="1" /><span asp-validation-for="Quantity" class="validation"></span></div>
+        @if (Model.Customers.Count == 0)
+        {
+            <p class="muted">You need a customer first. <a href="/customers/new">Add customer</a>.</p>
+        }
+        @if (Model.Products.Count == 0)
+        {
+            <p class="muted">You need a product first. <a href="/products/new">Add product</a>.</p>
+        }
+        <button class="button primary" type="submit" disabled="@(Model.Customers.Count == 0 || Model.Products.Count == 0)">Place order</button>
+    </form>
+</section>

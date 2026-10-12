@@ -1,0 +1,30 @@
+@model SalesSummaryResponse
+@{
+    ViewData["Title"] = "Reports";
+    var lowStock = ViewBag.LowStock as List<ProductResponse> ?? [];
+    var threshold = (int)ViewBag.Threshold;
+}
+<div class="page-heading"><div><p class="eyebrow">Insights</p><h1>Reports</h1><p>Booked sales exclude cancelled orders.</p></div></div>
+<section class="stats">
+    <div class="stat"><span>Active orders</span><strong>@Model.OrderCount</strong></div>
+    <div class="stat"><span>Units ordered</span><strong>@Model.UnitsOrdered</strong></div>
+    <div class="stat"><span>Booked revenue</span><strong>@Model.BookedRevenue.ToString("C")</strong></div>
+</section>
+<section class="panel">
+    <div class="section-heading"><div><p class="eyebrow">Inventory</p><h2>Low stock</h2></div>
+        <form method="get" action="/reports" class="inline-form"><label for="threshold">At or below</label><input id="threshold" name="threshold" type="number" min="0" value="@threshold" /><button class="button secondary" type="submit">Apply</button></form>
+    </div>
+    @if (lowStock.Count == 0)
+    {
+        <p class="muted">No products at or below @threshold units.</p>
+    }
+    else
+    {
+        <div class="table-wrap"><table><thead><tr><th>Product</th><th>Stock remaining</th><th>Price</th></tr></thead><tbody>
+        @foreach (var product in lowStock)
+        {
+            <tr><td><a href="/products/@product.Id/edit">@product.Name</a></td><td><span class="badge warning">@product.StockQuantity</span></td><td>@product.Price.ToString("C")</td></tr>
+        }
+        </tbody></table></div>
+    }
+</section>

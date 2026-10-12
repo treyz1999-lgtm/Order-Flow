@@ -1,6 +1,6 @@
 # OrderFlow
 
-OrderFlow is a C# / ASP.NET Core Web API for product inventory, customers, and orders. It uses SQL Server through Entity Framework Core and demonstrates transactional stock updates, optimistic concurrency, request validation, reporting, and database-backed integration tests.
+OrderFlow is a C# / ASP.NET Core web app and API for product inventory, customers, and orders. It uses SQL Server through Entity Framework Core and demonstrates transactional stock updates, optimistic concurrency, request validation, reporting, and database-backed integration tests.
 
 ## Features
 
@@ -11,10 +11,11 @@ OrderFlow is a C# / ASP.NET Core Web API for product inventory, customers, and o
 - Order status transitions from `Placed` to `Fulfilled` or `Cancelled`. Cancelling restores stock in a transaction; a final status cannot be changed again.
 - Low-stock products and booked-sales summary endpoints. Booked revenue includes placed and fulfilled orders and excludes cancelled orders; this API does not process payments.
 - OpenAPI JSON at `/openapi/v1.json` in Development.
+- Browser pages for the dashboard, product and customer forms, single-product order placement, order status, and reports.
 
 ## Stack
 
-.NET 10, ASP.NET Core controllers, EF Core 10, SQL Server LocalDB, xUnit, and Microsoft OpenAPI. The API uses request and response DTOs so database entities do not define the public JSON contract.
+.NET 10, ASP.NET Core MVC and API controllers, Razor views, EF Core 10, SQL Server LocalDB, xUnit, and Microsoft OpenAPI. The browser UI and JSON API share the same services. The API uses request and response DTOs so database entities do not define the public JSON contract.
 
 ## Run locally
 
@@ -26,7 +27,9 @@ dotnet restore OrderFlow.slnx
 dotnet run --project src/OrderFlow.Api --launch-profile http
 ```
 
-The development app applies EF Core migrations to the `OrderFlow` LocalDB database and inserts two starter products if the product table is empty. The API listens at `http://localhost:5158`. The connection string in `src/OrderFlow.Api/appsettings.json` can be overridden with `ConnectionStrings__OrderFlow`; keep credentials out of Git.
+The development app applies EF Core migrations to the `OrderFlow` LocalDB database and inserts two starter products if the product table is empty. Open `http://localhost:5158/` for the dashboard. The browser pages are at `/products`, `/customers`, `/orders`, and `/reports`; JSON endpoints remain under `/api`. The connection string in `src/OrderFlow.Api/appsettings.json` can be overridden with `ConnectionStrings__OrderFlow`; keep credentials out of Git.
+
+In Visual Studio, open `OrderFlow.slnx`, set `OrderFlow.Api` as the startup project, select the `http` profile, and press F5. The browser should open the dashboard. If the process exits before the page appears, check that SQL Server LocalDB starts successfully with `sqllocaldb start MSSQLLocalDB`.
 
 Run the integration tests with:
 
@@ -61,4 +64,4 @@ Example requests are in [`src/OrderFlow.Api/OrderFlow.Api.http`](src/OrderFlow.A
 
 ## Current limits
 
-This is a portfolio API. It has no authentication or payment processing and is intended for local demonstration. It uses SQL Server LocalDB on Windows; a different SQL Server connection string is needed elsewhere. The sales endpoint reports booked value, not completed payments. The development seed is intentionally small.
+This is a portfolio demo. It has no authentication or payment processing and is intended for local use. The browser form places one product per order; the API supports multiple products. It uses SQL Server LocalDB on Windows; a different SQL Server connection string is needed elsewhere. The sales endpoint reports booked value, not completed payments. The development seed is intentionally small.
