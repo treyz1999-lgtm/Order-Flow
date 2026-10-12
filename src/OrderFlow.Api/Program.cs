@@ -13,7 +13,8 @@ builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<OrderFlowDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("OrderFlow")
-        ?? throw new InvalidOperationException("Connection string 'OrderFlow' is missing.")));
+        ?? throw new InvalidOperationException("Connection string 'OrderFlow' is missing."),
+        sql => sql.EnableRetryOnFailure(20, TimeSpan.FromSeconds(5), null)));
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<OrderService>();

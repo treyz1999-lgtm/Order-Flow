@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+.git/
+.env
+img/
+tests/
+**/.vs/
+**/.vscode/

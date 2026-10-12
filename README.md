@@ -1,6 +1,8 @@
 # OrderFlow
 
-OrderFlow is a C# / ASP.NET Core web app and API for product inventory, customers, and orders. It uses SQL Server through Entity Framework Core and demonstrates transactional stock updates, optimistic concurrency, request validation, reporting, and database-backed integration tests.
+OrderFlow is a C# / ASP.NET Core web app and API for product inventory, customers, and orders. It uses SQL Server through Entity Framework Core and demonstrates transactional stock updates, optimistic concurrency, request validation, reporting, and database-backed integration tests. Docker Compose runs the app and database together for a local demo.
+
+![OrderFlow dashboard](img/orderflow_home.png)
 
 ## Features
 
@@ -15,7 +17,19 @@ OrderFlow is a C# / ASP.NET Core web app and API for product inventory, customer
 
 ## Stack
 
-.NET 10, ASP.NET Core MVC and API controllers, Razor views, EF Core 10, SQL Server LocalDB, xUnit, and Microsoft OpenAPI. The browser UI and JSON API share the same services. The API uses request and response DTOs so database entities do not define the public JSON contract.
+.NET 10, ASP.NET Core MVC and API controllers, Razor views, EF Core 10, SQL Server LocalDB or containerized SQL Server 2022, xUnit, and Microsoft OpenAPI. The browser UI and JSON API share the same services. The API uses request and response DTOs so database entities do not define the public JSON contract.
+
+## Run with Docker
+
+Install Docker Desktop and select Linux containers. From the repository root, copy `.env.example` to `.env` and replace the sample password with a strong, unique password. In PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+# Edit .env and replace the sample password before starting the containers.
+docker compose up --build -d
+```
+
+Open `http://localhost:5158/`. Compose runs the web app and SQL Server 2022 Developer Edition. The app waits for SQL Server, applies EF Core migrations, and inserts two starter products into a new database. Database files persist in the `sqlserver-data` Docker volume. This database is separate from the Windows LocalDB database used by Visual Studio. Stop the containers with `docker compose down`; use `docker compose down -v` only when you intend to delete the container database. Port `5158` must be free, so stop the Visual Studio run first.
 
 ## Run locally
 
@@ -38,6 +52,18 @@ dotnet test OrderFlow.slnx
 ```
 
 Tests create temporary `OrderFlowTest_<guid>` LocalDB databases, apply the migrations, and delete them afterward. They check order placement and cancellation, rejection without partial stock changes, and booked-sales exclusion of cancelled orders.
+
+## Screenshots
+
+| Dashboard | Add a product |
+| --- | --- |
+| ![Dashboard](img/orderflow_home.png) | ![Product form](img/orderflow_addProd.png) |
+
+| Product inventory | Place an order |
+| --- | --- |
+| ![Product inventory](img/orderflow_addProd2.png) | ![Order details](img/orderFlow_placeOrder.png) |
+
+![Low stock report](img/orderFlow_lowStock.png)
 
 ## API
 
@@ -64,4 +90,4 @@ Example requests are in [`src/OrderFlow.Api/OrderFlow.Api.http`](src/OrderFlow.A
 
 ## Current limits
 
-This is a portfolio demo. It has no authentication or payment processing and is intended for local use. The browser form places one product per order; the API supports multiple products. It uses SQL Server LocalDB on Windows; a different SQL Server connection string is needed elsewhere. The sales endpoint reports booked value, not completed payments. The development seed is intentionally small.
+This is a portfolio demo. It has no authentication or payment processing and is intended for local use. The browser form places one product per order; the API supports multiple products. Local Visual Studio runs use SQL Server LocalDB on Windows; Docker Compose supplies a separate SQL Server container. The sales endpoint reports booked value, not completed payments. The development seed is intentionally small.
